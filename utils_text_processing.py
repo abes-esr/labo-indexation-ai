@@ -38,7 +38,7 @@ RANDOM_STATE = 42
 def get_dataset(filename):
     dataset = pd.read_pickle(
         os.path.join(data_path, filename),
-        converters={"DESCR": eval,  "rameau_concepts": eval},
+        converters={"DESCR": eval, "rameau_concepts": eval},
     )
     return dataset
 
@@ -56,9 +56,11 @@ def get_dataset_init(filename):
     )
     return dataset_init
 
+
 def flatten(liste):
     flat_list = [item for sublist in liste for item in sublist]
     return flat_list
+
 
 #                           TEXT PREPROCESS                         #
 # --------------------------------------------------------------------
@@ -208,7 +210,7 @@ class PreprocessData:
 
         # remove particular characters and punctuation
         text_lower = re.sub(r"_", " ", text_lower)  # r"_| x |\d+x"
-        
+
         if self.numeric:
             # remove all numeric characters
             text_lower = re.sub(r"[^\D]", " ", text_lower)
@@ -238,7 +240,6 @@ class PreprocessData:
         for word in tokens:
             if word in punctuations:
                 tokens.remove(word)
-
 
         # Finalize text
         self.tokens = tokens
