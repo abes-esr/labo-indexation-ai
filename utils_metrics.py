@@ -47,28 +47,46 @@ def cosine_similarity(index1, index2):
 
 
 # Compute metrics
-def label_metrics_report(modelName, y_true, y_pred, print_metrics=False):
+def label_metrics_report(
+    modelName, y_true, y_pred, zero_division="warn", print_metrics=False
+):
     accuracy = accuracy_score(y_true, y_pred)
-    macro_precision = precision_score(y_true, y_pred, average="macro")
-    macro_recall = recall_score(y_true, y_pred, average="macro")
-    macro_f1 = f1_score(y_true, y_pred, average="macro")
-    macro_jaccard = jaccard_score(y_true, y_pred, average="macro")
-    micro_precision = precision_score(y_true, y_pred, average="micro")
-    micro_recall = recall_score(y_true, y_pred, average="micro")
-    micro_f1 = f1_score(y_true, y_pred, average="micro")
-    micro_jaccard = jaccard_score(y_true, y_pred, average="micro")
-    sample_precision = precision_score(y_true, y_pred, average="samples")
-    sample_recall = recall_score(y_true, y_pred, average="samples")
-    sample_f1 = f1_score(y_true, y_pred, average="samples")
-    sample_jaccard = jaccard_score(y_true, y_pred, average="samples")
+    macro_precision = precision_score(
+        y_true, y_pred, average="macro", zero_division=zero_division
+    )
+    macro_recall = recall_score(
+        y_true, y_pred, average="macro", zero_division=zero_division
+    )
+    macro_f1 = f1_score(y_true, y_pred, average="macro", zero_division=zero_division)
+    macro_jaccard = jaccard_score(
+        y_true, y_pred, average="macro", zero_division=zero_division
+    )
+    micro_precision = precision_score(
+        y_true, y_pred, average="micro", zero_division=zero_division
+    )
+    micro_recall = recall_score(
+        y_true, y_pred, average="micro", zero_division=zero_division
+    )
+    micro_f1 = f1_score(y_true, y_pred, average="micro", zero_division=zero_division)
+    micro_jaccard = jaccard_score(
+        y_true, y_pred, average="micro", zero_division=zero_division
+    )
+    sample_precision = precision_score(
+        y_true, y_pred, average="samples", zero_division=zero_division
+    )
+    sample_recall = recall_score(
+        y_true, y_pred, average="samples", zero_division=zero_division
+    )
+    sample_f1 = f1_score(y_true, y_pred, average="samples", zero_division=zero_division)
+    sample_jaccard = jaccard_score(
+        y_true, y_pred, average="samples", zero_division=zero_division
+    )
     hamLoss = hamming_loss(y_true, y_pred)
 
     if print_metrics:
         # Print result
         print("------" + modelName + " Model Metrics-----")
-        print(
-            f"Accuracy: {accuracy:.4f}\nHamming Loss: {hamLoss:.4f}\nCosine Similarity: {cos_simi:.4f}"
-        )
+        print(f"Accuracy: {accuracy:.4f}\nHamming Loss: {hamLoss:.4f}")
         print(
             f"Precision:\n  - Macro: {macro_precision:.4f}\n  - Micro: {micro_precision:.4f}"
         )
@@ -80,10 +98,10 @@ def label_metrics_report(modelName, y_true, y_pred, print_metrics=False):
     return {
         "Hamming Loss": hamLoss,
         "Accuracy": accuracy,
-        "Precision - Micro": micro_precision,
-        "Recall - Micro": micro_recall,
-        "F1_Score - Micro": micro_f1,
-        "Jaccard - Micro": micro_jaccard,
+        "Precision - Macro": macro_precision,
+        "Recall - Macro": macro_recall,
+        "F1_Score - Macro": macro_f1,
+        "Jaccard - Macro": macro_jaccard,
         "Precision - Sample": sample_precision,
         "Recall - Sample": sample_recall,
         "F1_Score - Sample": sample_f1,
