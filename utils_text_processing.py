@@ -217,7 +217,6 @@ class PreprocessData:
 
         # Lemmatization
         if self.lem:
-            # stemming
             tokens = self.lemma_fct(text_lower)
         else:
             # tokenize
