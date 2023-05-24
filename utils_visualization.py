@@ -88,51 +88,49 @@ def metrics_radar_plot(
     summary,
     metrics=[
         "Hamming Loss",
-        "Accuracy",
+        "Brier Loss",
         "F1_Score - Sample",
         "Precision - Sample",
         "Recall - Sample",
         "Jaccard - Sample",
     ],
     remove_identity=True,
+    scale=False,
     title=None,
     savefig=None,
     width=800,
     height=550,
 ):
-    """
-    Show values of clusters' centroids on each variable
-
-    Parameters:
-    -----------
-        - summary (pd.DataFrame): summary with results of optimized models
-        - metrics (list of strings): list of metrics to plot
-        - remove_identity (bool): whether to remove identical comparisons or not (default: True)
-        - title (str): title to write on plot
-        - savefig (str): name of the figure if wanted to save (default: no saving)
-        - width (int): width of the plot (default:650)
-        - height (int) : height of the plot (default:500)
-
-    Returns :
-    ---------
-        - Radar plot of standardized metrics
-    """
-
     fig = go.Figure()
-    subset = summary[metrics]
+    subset = summary[metrics].copy()
     if remove_identity:
         comp = [s.split("-") for s in subset.index]
         is_not_identity = [compar[0] != compar[1] for compar in comp]
         subset = subset[is_not_identity]
 
+    # Metrics formating
     if "Hamming Loss" in metrics:
         subset.loc[:, "1-Hamming_Loss"] = 1 - subset.loc[:, "Hamming Loss"]
         subset.drop(columns="Hamming Loss", inplace=True)
-    scale_subset = MinMaxScaler().fit_transform(subset)
-    for i, idx in enumerate(subset.index):
+    if "Brier Loss" in metrics:
+        if any(subset.loc[:, "Brier Loss"].dropna()):
+            subset.loc[:, "1-Brier_Loss"] = 1 - subset.loc[:, "Brier Loss"]
+        subset.drop(columns="Brier Loss", inplace=True)
+
+    # standardization
+    if scale:
+        sub = MinMaxScaler().fit_transform(subset)
+    else:
+        sub = subset
+
+    # Plot
+    for idx in sub.index:
         fig.add_trace(
             go.Scatterpolar(
-                r=scale_subset[i], theta=subset.columns, fill="toself", name=idx
+                r=sub.loc[idx],
+                theta=sub.columns,
+                fill="toself",
+                name=idx,
             )
         )
         fig.update_layout(
