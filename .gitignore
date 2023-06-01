@@ -11,8 +11,7 @@
 # ignore folders
 __pycache__/
 figs
-ANNIF/data/test/
-ANNIF/data/train
+ANNIF/data
 data/reindexation/
 data/extraction/
 data/embeddings
