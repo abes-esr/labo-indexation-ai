@@ -1,0 +1,20 @@
+# ignore all logs
+*.log
+
+# ignore all xlsx files
+*.xlsx
+
+# ignore all images
+*.png
+*.html
+
+# ignore folders
+__pycache__/
+figs
+ANNIF/data/test/
+ANNIF/data/train
+data/reindexation/
+data/extraction/
+data/embeddings
+
+# ignore specific files
