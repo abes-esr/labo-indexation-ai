@@ -32,6 +32,18 @@ def label_metrics_report(
     print_metrics=False,
 ):
     accuracy = accuracy_score(y_true, y_pred)
+    weighted_precision = precision_score(
+        y_true, y_pred, average="weighted", zero_division=zero_division
+    )
+    weighted_recall = recall_score(
+        y_true, y_pred, average="weighted", zero_division=zero_division
+    )
+    weighted_f1 = f1_score(
+        y_true, y_pred, average="weighted", zero_division=zero_division
+    )
+    weighted_jaccard = jaccard_score(
+        y_true, y_pred, average="weighted", zero_division=zero_division
+    )
     macro_precision = precision_score(
         y_true, y_pred, average="macro", zero_division=zero_division
     )
@@ -92,6 +104,10 @@ def label_metrics_report(
         "Recall - Macro": macro_recall,
         "F1_Score - Macro": macro_f1,
         "Jaccard - Macro": macro_jaccard,
+        "Precision - Weighted": weighted_precision,
+        "Recall - Weighted": weighted_recall,
+        "F1_Score - Weighted": weighted_f1,
+        "Jaccard - Weighted": weighted_jaccard,
         "Precision - Sample": sample_precision,
         "Recall - Sample": sample_recall,
         "F1_Score - Sample": sample_f1,
