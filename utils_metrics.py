@@ -18,9 +18,6 @@ from sklearn.metrics import (
 )
 
 
-from utils_text_processing import *
-
-
 # Compute metrics
 def label_metrics_report(
     modelName,
