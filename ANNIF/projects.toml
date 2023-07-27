@@ -1,0 +1,75 @@
+[rameau-tfidf-fr]
+name = "RAMEAU TFIDF project"
+language = "fr"
+backend = "tfidf"
+vocab = "rameau"
+analyzer = "spacy(fr_core_news_md)"
+
+[rameau-fasttext-fr]
+name = "RAMEAU fasttext project"
+language = "fr"
+backend = "fasttext"
+vocab = "rameau"
+analyzer = "spacy(fr_core_news_md)"
+
+[rameau-mllm-fr]
+name = "RAMEAU MLLM project"
+language = "fr"
+backend = "mllm"
+vocab = "rameau"
+analyzer = "spacy(fr_core_news_md)"
+
+[rameau-omikuji-fr]
+name = "RAMEAU OMIKUJI project"
+language = "fr"
+backend = "omikuji"
+vocab = "rameau"
+analyzer = "spacy(fr_core_news_md)"
+
+[rameau-ensemble-MLLM-fr]
+name = "RAMEAU ensemble project with MLLM"
+language = "fr"
+backend = "nn_ensemble"
+vocab = "rameau"
+sources = "rameau-tfidf-fr,rameau-mllm-fr:2"
+nodes = "100"
+dropout_rate = "0.2"
+epochs = "10"
+
+[rameau-ensemble-fasttext-fr]
+name = "RAMEAU ensemble project with FastText"
+language = "fr"
+backend = "nn_ensemble"
+vocab = "rameau"
+sources = "rameau-tfidf-fr,rameau-fasttext-fr:2"
+nodes = "100"
+dropout_rate = "0.2"
+epochs = "10"
+
+[rameau-ensemble-omikuji-fr]
+name = "RAMEAU ensemble project with OMIKUJI"
+language = "fr"
+backend = "nn_ensemble"
+vocab = "rameau"
+sources = "rameau-tfidf-fr,rameau-omikuji-fr:2"
+nodes = "100"
+dropout_rate = "0.2"
+epochs = "10"
+
+[rameau-pav-MLLM-fr]
+name = "RAMEAU PAV ensemble project with MLLM"
+language = "fr"
+backend = "pav"
+vocab = "rameau"
+sources = "rameau-tfidf-fr:1,rameau-mllm-fr:2"
+min-docs = "3"
+limit = "100"
+
+[rameau-pav-fasttext-fr]
+name = "RAMEAU PAV ensemble project with FastText"
+language = "fr"
+backend = "pav"
+vocab = "rameau"
+sources = "rameau-tfidf-fr:1,rameau-fasttext-fr:2"
+min-docs = "3"
+limit = "100"

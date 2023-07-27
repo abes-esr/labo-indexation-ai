@@ -1,0 +1,159 @@
+vars:
+  - vocab: 'rameau'  # Uncomment this if you are using the YSO dataset
+  - docs: 250000      # Max. number of documents to use
+  - trials: 100
+
+stages:
+  # Load vocabulary
+  load-vocab:
+    cmd: annif load-vocab ${vocab} data/subjects.csv --force
+    deps:
+    - data/subjects.csv
+    outs:
+    - data/vocabs/${vocab}
+  
+  # Train tfidf project
+  train-tfidf:
+    cmd: annif train ${vocab}-tfidf-fr data/rameau-train.tsv -d ${docs}
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    params:
+    - projects.toml:
+      - ${vocab}-tfidf-fr
+    outs:
+    - data/projects/${vocab}-tfidf-fr
+  
+  # Train FastText project
+  train-fasttext:
+    cmd: annif train ${vocab}-fasttext-fr data/rameau-train.tsv -d ${docs}
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    params:
+    - projects.toml:
+      - ${vocab}-fasttext-fr
+    outs:
+    - data/projects/${vocab}-fasttext-fr
+
+  # Train MLLM project
+  train-mllm:
+    cmd: annif train ${vocab}-mllm-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    params:
+    - projects.toml:
+      - ${vocab}-mllm-fr
+    outs:
+    - data/projects/${vocab}-mllm-fr
+  
+  # Train Omikuji project
+  train-omikuji:
+    cmd: annif train ${vocab}-omikuji-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    params:
+    - projects.toml:
+      - ${vocab}-omikuji-fr
+    outs:
+    - data/projects/${vocab}-omikuji-fr
+
+
+  # Train ensemble with MLLM project
+  train-ensemble-MLLM:
+    cmd: annif train ${vocab}-ensemble-MLLM-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    - data/projects/${vocab}-tfidf-fr
+    - data/projects/${vocab}-mllm-fr
+    outs:
+    - data/projects/${vocab}-ensemble-MLLM-fr
+
+  # Train ensemble with FastText project
+  train-ensemble-FastText:
+    cmd: annif train ${vocab}-ensemble-fasttext-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    - data/projects/${vocab}-tfidf-fr
+    - data/projects/${vocab}-fasttext-fr
+    outs:
+    - data/projects/${vocab}-ensemble-fasttext-fr
+
+  # Train ensemble with OMIKUJI project
+  train-ensemble-Omikuji:
+    cmd: annif train ${vocab}-ensemble-omikuji-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    - data/projects/${vocab}-tfidf-fr
+    - data/projects/${vocab}-omikuji-fr
+    outs:
+    - data/projects/${vocab}-ensemble-omikuji-fr
+
+  # Train PAV with MLLM project
+  train-pav-MLLM:
+    cmd: annif train ${vocab}-pav-MLLM-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    - data/projects/${vocab}-tfidf-fr
+    - data/projects/${vocab}-mllm-fr
+    outs:
+    - data/projects/${vocab}-pav-MLLM-fr
+
+  # Train PAV with FastText project
+  train-pav-fasttext:
+    cmd: annif train ${vocab}-pav-fasttext-fr --docs-limit ${docs} data/rameau-train.tsv
+    deps:
+    - data/rameau-train.tsv
+    - data/vocabs/${vocab}
+    - data/projects/${vocab}-tfidf-fr
+    - data/projects/${vocab}-fasttext-fr
+    outs:
+    - data/projects/${vocab}-pav-fasttext-fr
+
+  # Evaluate projects in a loop
+  eval-fr:
+    foreach:
+    - ${vocab}-tfidf-fr
+    - ${vocab}-fasttext-fr
+    - ${vocab}-mllm-fr
+    - ${vocab}-omikuji-fr
+    - ${vocab}-ensemble-MLLM-fr
+    - ${vocab}-ensemble-fasttext-fr
+    - ${vocab}-ensemble-omikuji-fr
+    - ${vocab}-pav-MLLM-fr
+    - ${vocab}-pav-fasttext-fr
+    do:
+      cmd:
+      - annif eval ${item} --metrics-file reports/${item}.json data/rameau-test.tsv -d ${docs}
+      deps:
+      - data/rameau-test.tsv
+      - data/projects/${item}
+      params:
+      - projects.toml:
+        - ${item}
+      metrics:
+      - reports/${item}.json:
+          cache: false
+
+# Hyperoptimize projects in a loop
+  eval-fr:
+    foreach:
+    - ${vocab}-mllm-fr
+    do:
+      cmd:
+      - annif hyperopt ${item} --trials {trials} --results-file optimization/${item}.csv --jobs 4 data/rameau-test.tsv -d ${docs}
+      deps:
+      - data/rameau-test.tsv
+      - data/projects/${item}
+      params:
+      - projects.toml:
+        - ${item}
+      outs:
+      - optimization/${item}.json:
+          cache: false
