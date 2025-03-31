@@ -67,7 +67,6 @@ conda-env=2.6.0=1
 conda-package-handling=2.1.0=py310h06a4308_0
 conda-package-streaming=0.8.0=py310h06a4308_0
 conda-repo-cli=1.0.41=py310h06a4308_0
-conda-token=0.4.0=pyhd3eb1b0_0
 conda-verify=3.4.2=py_1
 confection=0.0.4=pypi_0
 constantly=15.1.0=py310h06a4308_0
